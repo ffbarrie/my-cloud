@@ -85,4 +85,5 @@ Architecture decisions that affect My Cloud as a whole (including PKI) continue 
 
 - [ADR-0001: Nitrokey HSM 2 for Offline CA](0001-nitrokey-hsm2-offline-ca.md)
 - [My Cloud roadmap](../../roadmap.md)
+- [ADR-0003: PKI Certificate Naming and Subject DN Policy](0003-pki-certificate-naming.md)
 - Implementation repository: https://github.com/ffbarrie/my-cloud-pki
