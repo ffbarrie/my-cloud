@@ -27,7 +27,8 @@ Use **EJBCA Community Edition (EJBCA CE)** as the online issuing CA for My Cloud
 PKI.
 
 1. EJBCA CE runs as the always-on issuing CA service under `my-cloud-pki`
-   (Compose), with persistent database storage.
+   (Compose), with persistent database storage on PostgreSQL
+   ([ADR-0005](0005-postgresql-datastore.md)).
 2. The issuing CA certificate is signed by the offline root (or, temporarily,
    by the [bootstrap software root](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md)).
 3. Certificate profiles, enrollment protocols (including EST), and revocation
@@ -66,7 +67,8 @@ PKI.
 ### Neutral
 
 - Exact Compose image tags, ports, TLS termination, and profile templates are
-  implementation details in `my-cloud-pki`.
+  implementation details in `my-cloud-pki`. The relational database engine is
+  decided in [ADR-0005](0005-postgresql-datastore.md).
 - Leaf naming and SPIFFE / workload identity policy remain future work under
   ADR-0003 and follow-on ADRs.
 - ACME may be added later for Kubernetes automation without changing this
@@ -87,5 +89,6 @@ PKI.
 - [ADR-0001: Nitrokey HSM 2 for Offline CA](0001-nitrokey-hsm2-offline-ca.md)
 - [ADR-0002: my-cloud-pki Repository Layout](0002-my-cloud-pki-repository-layout.md)
 - [ADR-0003: PKI Certificate Naming and Subject DN Policy](0003-pki-certificate-naming.md)
+- [ADR-0005: PostgreSQL for Online Stateful Services](0005-postgresql-datastore.md)
 - Implementation: https://github.com/ffbarrie/my-cloud-pki/tree/main/issuing-ca
 - Keyfactor docs: https://docs.keyfactor.com/ejbca/latest/tutorial-start-out-with-ejbca-docker-container
