@@ -31,7 +31,8 @@ Adopt a naming policy with three layers:
 
 | Certificate type | CN pattern | Purpose |
 | ---------------- | ---------- | ------- |
-| Offline root CA | `{Lab Name} Offline Root CA` | Identifies the offline trust anchor |
+| Offline root CA | `{Lab Name} Offline Root CA` | Identifies the HSM-backed offline trust anchor |
+| Bootstrap root CA | `{Lab Name} Bootstrap Root CA` | Identifies a temporary or non-HSM software root |
 | Issuing / intermediate CA | `{Lab Name} Issuing CA` | Identifies the online signing CA |
 | Leaf / workload | Service hostname or SPIFFE ID | Identifies the workload |
 
@@ -49,28 +50,33 @@ Additional distinguished name fields:
    descriptive names, not DNS names like `ca.internal`.
 2. **Root and intermediate names must be distinct.** Operators must be able to tell
    which certificate is which in tooling output and trust stores.
-3. **Include "Offline" in the root CN** to reinforce [ADR-0001](0001-nitrokey-hsm2-offline-ca.md)
+3. **Include "Offline" in the HSM root CN** to reinforce [ADR-0001](0001-nitrokey-hsm2-offline-ca.md)
    offline-root posture.
-4. **Do not embed secrets in the DN.** PINs, tokens, and internal recovery labels
+4. **Include "Bootstrap" in any software-root CN.** The OpenSSL file-based root used
+   while waiting for HSMs (or by labs without HSMs) must not reuse the Offline
+   root name. See the [bootstrap software root runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md).
+5. **Do not embed secrets in the DN.** PINs, tokens, and internal recovery labels
    do not belong in certificate subjects.
-5. **Root CAs do not use Subject Alternative Names (SANs).** SANs are for leaf and
-   some intermediate use cases, not offline roots.
-6. **Forks must choose their own values.** Reusing `My Cloud Offline Root CA`
-   creates a different deployment that should not be confused with the upstream
-   example.
+6. **Root CAs do not use Subject Alternative Names (SANs).** SANs are for leaf and
+   some intermediate use cases, not offline or bootstrap roots.
+7. **Forks must choose their own values.** Reusing `My Cloud Offline Root CA` or
+   `My Cloud Bootstrap Root CA` creates a different deployment that should not be
+   confused with the upstream example.
 
 ### My Cloud default values
 
 These are the reference values for this deployment and the committed examples:
 
-| Field | Offline root CA | Issuing CA |
-| ----- | --------------- | ---------- |
-| `CN` | `My Cloud Offline Root CA` | `My Cloud Issuing CA` |
-| `O` | `My Cloud` | `My Cloud` |
-| `OU` | `PKI` | `PKI` |
+| Field | Offline root CA | Bootstrap root CA | Issuing CA |
+| ----- | --------------- | ----------------- | ---------- |
+| `CN` | `My Cloud Offline Root CA` | `My Cloud Bootstrap Root CA` | `My Cloud Issuing CA` |
+| `O` | `My Cloud` | `My Cloud` | `My Cloud` |
+| `OU` | `PKI` | `PKI` | `PKI` |
 
-Implementation templates live in
-[my-cloud-pki/offline-ca/profiles/](https://github.com/ffbarrie/my-cloud-pki/tree/main/offline-ca/profiles).
+Implementation templates live in:
+
+- Offline / HSM: [my-cloud-pki/offline-ca/profiles/](https://github.com/ffbarrie/my-cloud-pki/tree/main/offline-ca/profiles)
+- Bootstrap / software: [my-cloud-pki/bootstrap/profiles/](https://github.com/ffbarrie/my-cloud-pki/tree/main/bootstrap/profiles)
 
 ## Consequences
 
@@ -108,4 +114,6 @@ Implementation templates live in
 - [ADR-0001: Nitrokey HSM 2 for Offline CA](0001-nitrokey-hsm2-offline-ca.md)
 - [ADR-0002: my-cloud-pki Repository Layout](0002-my-cloud-pki-repository-layout.md)
 - [Offline CA ceremony runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/offline-ca/ceremony-runbook.md)
-- Certificate profile examples: https://github.com/ffbarrie/my-cloud-pki/tree/main/offline-ca/profiles
+- [Bootstrap software root CA runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md)
+- Offline profile examples: https://github.com/ffbarrie/my-cloud-pki/tree/main/offline-ca/profiles
+- Bootstrap profile examples: https://github.com/ffbarrie/my-cloud-pki/tree/main/bootstrap/profiles
