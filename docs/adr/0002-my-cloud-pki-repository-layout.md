@@ -41,7 +41,7 @@ my-cloud-pki
 | `docs/` | PKI-specific runbooks, ceremony notes, and operational docs |
 | `bootstrap/` | One-time or rarely run setup helpers |
 | `offline-ca/` | Offline root CA material: HSM init, ceremony scripts, docs (not a long-running Compose service) |
-| `issuing-ca/` | Online intermediate / issuing CA configuration and service assets |
+| `issuing-ca/` | Online intermediate / issuing CA (EJBCA CE) configuration and service assets; see [ADR-0004](0004-ejbca-online-issuing-ca.md) |
 | `ocsp/` | OCSP responder |
 | `est/` | Enrollment over Secure Transport |
 | `crl/` | CRL publication / distribution |
@@ -86,4 +86,5 @@ Architecture decisions that affect My Cloud as a whole (including PKI) continue 
 - [ADR-0001: Nitrokey HSM 2 for Offline CA](0001-nitrokey-hsm2-offline-ca.md)
 - [My Cloud roadmap](../../roadmap.md)
 - [ADR-0003: PKI Certificate Naming and Subject DN Policy](0003-pki-certificate-naming.md)
+- [ADR-0004: EJBCA Community as Online Issuing CA](0004-ejbca-online-issuing-ca.md)
 - Implementation repository: https://github.com/ffbarrie/my-cloud-pki

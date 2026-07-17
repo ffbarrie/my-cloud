@@ -98,7 +98,8 @@ Implementation templates live in:
 
 - Validity periods, key algorithms, and extension profiles remain in certificate
   profile files and future ADRs/runbooks.
-- Leaf naming for workloads will be defined when issuing CA automation is built.
+- Leaf naming for workloads will be defined when EJBCA certificate profiles and
+  enrollment automation are built ([ADR-0004](0004-ejbca-online-issuing-ca.md)).
 
 ## Alternatives Considered
 
@@ -114,6 +115,7 @@ Implementation templates live in:
 - [ADR-0001: Nitrokey HSM 2 for Offline CA](0001-nitrokey-hsm2-offline-ca.md)
 - [ADR-0002: my-cloud-pki Repository Layout](0002-my-cloud-pki-repository-layout.md)
 - [Offline CA ceremony runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/offline-ca/ceremony-runbook.md)
+- [ADR-0004: EJBCA Community as Online Issuing CA](0004-ejbca-online-issuing-ca.md)
 - [Bootstrap software root CA runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md)
 - Offline profile examples: https://github.com/ffbarrie/my-cloud-pki/tree/main/offline-ca/profiles
 - Bootstrap profile examples: https://github.com/ffbarrie/my-cloud-pki/tree/main/bootstrap/profiles
