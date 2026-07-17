@@ -60,4 +60,5 @@ Use **two Nitrokey HSM 2** devices to secure the offline root CA for My Cloud PK
 - [ADR-0003: PKI Certificate Naming and Subject DN Policy](0003-pki-certificate-naming.md)
 - [Offline CA ceremony runbook](https://github.com/ffbarrie/my-cloud-pki/blob/main/offline-ca/ceremony-runbook.md)
 - [Bootstrap software root CA](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md) — non-HSM path for labs without hardware, or while waiting for Nitrokeys; not a substitute for this ADR
-- Follow-up docs (to be written): intermediate CA design, device custody and PIN policy
+- [ADR-0004: EJBCA Community as Online Issuing CA](0004-ejbca-online-issuing-ca.md)
+- Follow-up docs (to be written): device custody and PIN policy
