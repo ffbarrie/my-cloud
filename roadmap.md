@@ -9,10 +9,10 @@ This document tracks the planned and in-progress components for the My Cloud hom
 Certificate authority and TLS infrastructure for the rest of the stack.
 
 - Repository: https://github.com/ffbarrie/my-cloud-pki
-- **Enrollment (near-term):** CMP and SCEP on EJBCA Community (path 1)
-- **Enrollment (later):** build EST — required end-state; not in CE
+- **Enrollment:** companion **EST** MVP live (`/cacerts`, `/simpleenroll` on port 8444);
+  `/simplereenroll` deferred v1.1. CMP/SCEP available natively on CE.
   ([ADR-0004](docs/adr/0004-ejbca-online-issuing-ca.md),
-  [est notes](https://github.com/ffbarrie/my-cloud-pki/tree/main/est))
+  [est](https://github.com/ffbarrie/my-cloud-pki/tree/main/est))
 
 ## Up Next
 

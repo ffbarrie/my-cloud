@@ -41,15 +41,16 @@ PKI.
 5. Use the Community Edition Docker image (`keyfactor/ejbca-ce`) for this home-lab
    deployment. Enterprise-only features and commercial support are out of scope
    unless a future ADR revisits edition choice.
-6. **Enrollment strategy (decided 2026-07-17):** Stay on EJBCA CE. Use
-   **CMP and SCEP** (native CE servlets) as the near-term automated enrollment
-   path. **EST remains a required capability** for the lab end-state, but it
-   is **not** available in CE (`est.war` is missing; `/.well-known/est/…`
-   returns 404). EST must be **built later**—either as a companion EST
-   front-end that issues via EJBCA, or by revisiting EJBCA Enterprise in a
-   follow-up ADR. ACME is likewise Enterprise-only and out of scope for now.
-   Lab TLS profiles (`MyCloudServer` / `MyCloudServerEE`) stay shared across
-   CMP/SCEP now and EST later.
+6. **Enrollment strategy (decided 2026-07-17, updated 2026-07-18):** Stay on EJBCA CE.
+   **CMP and SCEP** remain native CE enrollment paths for clients that speak those
+   protocols. **EST is required for the lab end-state** but is **not** available as
+   native `est.war` on CE (`/.well-known/est/…` on EJBCA returns 404). Implement EST
+   as a **companion front-end** under `my-cloud-pki/est/` that issues through EJBCA
+   **CMP RA mode** (`p10cr` / future `kur` for renewal). EJBCA Enterprise native EST
+   and ACME remain out of scope unless a future ADR revisits edition choice.
+   Lab TLS profiles (`MyCloudServer` / `MyCloudServerEE`) are shared across protocols.
+   **EST MVP (2026-07-18):** `/cacerts` and `/simpleenroll` only; `/simplereenroll`
+   deferred to v1.1.
 
 ## Consequences
 
@@ -69,9 +70,14 @@ PKI.
   as a supported production Enterprise product. For this home lab that is an
   accepted trade-off; the goal is production-grade *practice*, not a commercial
   SLA.
-- **EST must be built separately** (CE has no EST servlet). Until then,
-  automated enrollment is CMP/SCEP-first; `est/` holds preparation notes and
-  is not yet a working enrollment surface.
+- **EST is implemented as a companion service** (CE has no EST servlet). Automated
+  enrollment for EST clients uses the companion on port 8444; `/simplereenroll` is
+  deferred to v1.1. CMP/SCEP remain available for native CE clients.
+- **EST lab RA security:** client→EST HTTP Basic is a shared RA secret—anyone who
+  holds it can request a certificate for any CN (RA mode). EST→EJBCA uses CMP
+  HMAC over cleartext HTTP on the Compose `pki-internal` network (acceptable for
+  a single-host lab; treat that network as the trust boundary). Do not expose
+  EST or EJBCA CMP to untrusted networks without tightening auth and TLS.
 - Heavier than ACME-first tools such as Smallstep `step-ca` or HashiCorp Vault
   PKI for simple service TLS.
 
@@ -82,8 +88,9 @@ PKI.
   decided in [ADR-0005](0005-postgresql-datastore.md).
 - Leaf naming and SPIFFE / workload identity policy remain future work under
   ADR-0003 and follow-on ADRs.
-- Building EST later (companion front-end vs Enterprise) does not change the
-  decision that EJBCA is the issuing CA.
+- Building EST as a companion (vs Enterprise native) does not change the decision
+  that EJBCA is the issuing CA. Renewal over EST (`simplereenroll`) is tracked
+  for v1.1.
 
 ## Alternatives Considered
 
