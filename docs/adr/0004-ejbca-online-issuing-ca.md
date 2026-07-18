@@ -31,23 +31,31 @@ PKI.
    ([ADR-0005](0005-postgresql-datastore.md)).
 2. The issuing CA certificate is signed by the offline root (or, temporarily,
    by the [bootstrap software root](https://github.com/ffbarrie/my-cloud-pki/blob/main/bootstrap/software-root-ca.md)).
-3. Certificate profiles, enrollment protocols (including EST), and revocation
-   publishing (CRL / OCSP) are configured in EJBCA as the primary
-   implementation. Dedicated `est/`, `ocsp/`, and `crl/` directories may hold
-   publication config, reverse proxies, or later split-out services, but EJBCA
-   is the system of record for issuance.
+3. Certificate profiles, enrollment protocols, and revocation publishing
+   (CRL / OCSP) are configured in EJBCA as the primary implementation.
+   Dedicated `est/`, `ocsp/`, and `crl/` directories may hold publication
+   config, reverse proxies, or later split-out services, but EJBCA is the
+   system of record for issuance.
 4. Identity integration (Keycloak) remains a later phase for admin / enrollment
    flows; it does not replace EJBCA as the CA.
 5. Use the Community Edition Docker image (`keyfactor/ejbca-ce`) for this home-lab
    deployment. Enterprise-only features and commercial support are out of scope
    unless a future ADR revisits edition choice.
+6. **Enrollment strategy (decided 2026-07-17):** Stay on EJBCA CE. Use
+   **CMP and SCEP** (native CE servlets) as the near-term automated enrollment
+   path. **EST remains a required capability** for the lab end-state, but it
+   is **not** available in CE (`est.war` is missing; `/.well-known/est/…`
+   returns 404). EST must be **built later**—either as a companion EST
+   front-end that issues via EJBCA, or by revisiting EJBCA Enterprise in a
+   follow-up ADR. ACME is likewise Enterprise-only and out of scope for now.
+   Lab TLS profiles (`MyCloudServer` / `MyCloudServerEE`) stay shared across
+   CMP/SCEP now and EST later.
 
 ## Consequences
 
 ### Positive
 
-- One platform covers issuing CA, profiles, EST, CRL, and OCSP—matching the
-  intended PKI layout.
+- One platform covers issuing CA, profiles, CRL, OCSP, and CE-native CMP/SCEP.
 - Aligns with the offline-root / online-intermediate model already chosen in
   ADR-0001.
 - Mature CA administration UI and certificate lifecycle operations.
@@ -61,6 +69,9 @@ PKI.
   as a supported production Enterprise product. For this home lab that is an
   accepted trade-off; the goal is production-grade *practice*, not a commercial
   SLA.
+- **EST must be built separately** (CE has no EST servlet). Until then,
+  automated enrollment is CMP/SCEP-first; `est/` holds preparation notes and
+  is not yet a working enrollment surface.
 - Heavier than ACME-first tools such as Smallstep `step-ca` or HashiCorp Vault
   PKI for simple service TLS.
 
@@ -71,7 +82,7 @@ PKI.
   decided in [ADR-0005](0005-postgresql-datastore.md).
 - Leaf naming and SPIFFE / workload identity policy remain future work under
   ADR-0003 and follow-on ADRs.
-- ACME may be added later for Kubernetes automation without changing this
+- Building EST later (companion front-end vs Enterprise) does not change the
   decision that EJBCA is the issuing CA.
 
 ## Alternatives Considered
@@ -91,4 +102,6 @@ PKI.
 - [ADR-0003: PKI Certificate Naming and Subject DN Policy](0003-pki-certificate-naming.md)
 - [ADR-0005: PostgreSQL for Online Stateful Services](0005-postgresql-datastore.md)
 - Implementation: https://github.com/ffbarrie/my-cloud-pki/tree/main/issuing-ca
+- EST notes (CE limitation): https://github.com/ffbarrie/my-cloud-pki/tree/main/est
 - Keyfactor docs: https://docs.keyfactor.com/ejbca/latest/tutorial-start-out-with-ejbca-docker-container
+- Community vs Enterprise: https://www.ejbca.org/community-vs-enterprise/
