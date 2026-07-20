@@ -10,9 +10,11 @@ Certificate authority and TLS infrastructure for the rest of the stack.
 
 - Repository: https://github.com/ffbarrie/my-cloud-pki
 - **Enrollment:** companion **EST** MVP live (`/cacerts`, `/simpleenroll` on port 8444);
-  `/simplereenroll` deferred v1.1. CMP/SCEP available natively on CE.
+  `/simplereenroll` deferred v1.1. **CMP** native on CE. **SCEP** native CE
+  **CA/Client mode** under `scep/` (RA mode is Enterprise-only).
   ([ADR-0004](docs/adr/0004-ejbca-online-issuing-ca.md),
-  [est](https://github.com/ffbarrie/my-cloud-pki/tree/main/est))
+  [est](https://github.com/ffbarrie/my-cloud-pki/tree/main/est),
+  [scep](https://github.com/ffbarrie/my-cloud-pki/tree/main/scep))
 
 ## Up Next
 

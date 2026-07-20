@@ -26,6 +26,7 @@ my-cloud-pki
 ├── issuing-ca/
 ├── ocsp/
 ├── est/
+├── scep/
 ├── crl/
 ├── keycloak/
 ├── monitoring/
@@ -44,6 +45,7 @@ my-cloud-pki
 | `issuing-ca/` | Online intermediate / issuing CA (EJBCA CE) configuration and service assets; see [ADR-0004](0004-ejbca-online-issuing-ca.md) |
 | `ocsp/` | OCSP responder |
 | `est/` | Enrollment over Secure Transport |
+| `scep/` | Native EJBCA CE SCEP (CA/Client mode docs and local artifacts) |
 | `crl/` | CRL publication / distribution |
 | `keycloak/` | Identity integration needed by PKI enrollment or admin flows |
 | `monitoring/` | Health and observability for online PKI components |

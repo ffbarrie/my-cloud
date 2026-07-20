@@ -41,13 +41,18 @@ PKI.
 5. Use the Community Edition Docker image (`keyfactor/ejbca-ce`) for this home-lab
    deployment. Enterprise-only features and commercial support are out of scope
    unless a future ADR revisits edition choice.
-6. **Enrollment strategy (decided 2026-07-17, updated 2026-07-18):** Stay on EJBCA CE.
-   **CMP and SCEP** remain native CE enrollment paths for clients that speak those
-   protocols. **EST is required for the lab end-state** but is **not** available as
-   native `est.war` on CE (`/.well-known/est/…` on EJBCA returns 404). Implement EST
-   as a **companion front-end** under `my-cloud-pki/est/` that issues through EJBCA
-   **CMP RA mode** (`p10cr` / future `kur` for renewal). EJBCA Enterprise native EST
-   and ACME remain out of scope unless a future ADR revisits edition choice.
+6. **Enrollment strategy (decided 2026-07-17, updated 2026-07-20):** Stay on EJBCA CE.
+   **CMP** remains a native CE enrollment path (also backs EST). **SCEP** is native on
+   CE in **CA / Client mode only** (pre-register end entity; CSR `CN` +
+   `challengePassword`). **SCEP RA mode**, Intune-backed SCEP, and SCEP client
+   certificate renewal are **Enterprise** — the CE image may accept
+   `operationmode=ra` in the CLI but rejects PKCSReq at runtime. Document and
+   operationalize CE SCEP under `my-cloud-pki/scep/`. **EST is required for the lab
+   end-state** but is **not** available as native `est.war` on CE
+   (`/.well-known/est/…` on EJBCA returns 404). Implement EST as a **companion
+   front-end** under `my-cloud-pki/est/` that issues through EJBCA **CMP RA mode**
+   (`p10cr` / future `kur` for renewal). EJBCA Enterprise native EST and ACME remain
+   out of scope unless a future ADR revisits edition choice.
    Lab TLS profiles (`MyCloudServer` / `MyCloudServerEE`) are shared across protocols.
    **EST MVP (2026-07-18):** `/cacerts` and `/simpleenroll` only; `/simplereenroll`
    deferred to v1.1.
@@ -56,7 +61,8 @@ PKI.
 
 ### Positive
 
-- One platform covers issuing CA, profiles, CRL, OCSP, and CE-native CMP/SCEP.
+- One platform covers issuing CA, profiles, CRL, OCSP, CE-native CMP, and CE SCEP
+  Client/CA mode.
 - Aligns with the offline-root / online-intermediate model already chosen in
   ADR-0001.
 - Mature CA administration UI and certificate lifecycle operations.
@@ -72,12 +78,16 @@ PKI.
   SLA.
 - **EST is implemented as a companion service** (CE has no EST servlet). Automated
   enrollment for EST clients uses the companion on port 8444; `/simplereenroll` is
-  deferred to v1.1. CMP/SCEP remain available for native CE clients.
+  deferred to v1.1. CMP remains available for native CE clients. SCEP on CE is
+  Client/CA mode only (no NDES-like RA without Enterprise).
 - **EST lab RA security:** client→EST HTTP Basic is a shared RA secret—anyone who
   holds it can request a certificate for any CN (RA mode). EST→EJBCA uses CMP
   HMAC over cleartext HTTP on the Compose `pki-internal` network (acceptable for
   a single-host lab; treat that network as the trust boundary). Do not expose
-  EST or EJBCA CMP to untrusted networks without tightening auth and TLS.
+  EST, EJBCA CMP, or EJBCA SCEP to untrusted networks without tightening auth and TLS.
+- **SCEP vs NDES:** Microsoft NDES is a separate RA in front of ADCS; EJBCA CE SCEP
+  is in-process Client/CA mode. Clients that expect NDES/Intune “shared challenge
+  mints any CN” behavior need pre-registered end entities here (or Enterprise RA).
 - Heavier than ACME-first tools such as Smallstep `step-ca` or HashiCorp Vault
   PKI for simple service TLS.
 
